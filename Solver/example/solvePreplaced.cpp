@@ -1,6 +1,5 @@
 // Preplaced N-Queens: backtracking dengan bitmask.
 #include "nqueens.h"
-
 static int N, lastFree;
 static unsigned FULL;
 static int cur[16];
@@ -8,7 +7,6 @@ static unsigned forb[16];
 static bool fixedRow[16];
 static std::vector<std::vector<int>>* out;
 static bool mir;
-
 static inline void emit() {
     out->emplace_back(cur, cur + N);
     if (mir) {
@@ -17,7 +15,6 @@ static inline void emit() {
         out->push_back(std::move(m));
     }
 }
-
 static void dfs(int r, unsigned cols, unsigned ld, unsigned rd) {
     while (fixedRow[r]) {          // baris terkunci: cuma geser diagonal
         ld = (ld << 1) & FULL;
@@ -36,16 +33,13 @@ static void dfs(int r, unsigned cols, unsigned ld, unsigned rd) {
         dfs(r + 1, cols | b, ((ld | b) << 1) & FULL, (rd | b) >> 1);
     }
 }
-
 std::vector<std::vector<int>> solvePreplaced(int n, const std::vector<std::pair<int, int>>& pre) {
     std::vector<std::vector<int>> res;
     if (n <= 0) return res;
     N = n; FULL = (1u << n) - 1; out = &res; mir = false;
-
     unsigned cols = 0;
     for (int i = 0; i < n; i++) { fixedRow[i] = false; forb[i] = 0; }
     fixedRow[n] = false;           // penjaga (array berukuran 16, n <= 12)
-
     for (const auto& p : pre) {
         int r = p.first, c = p.second;
         if (r < 0 || r >= n || c < 0 || c >= n) return res;
@@ -64,14 +58,12 @@ std::vector<std::vector<int>> solvePreplaced(int n, const std::vector<std::pair<
             }
         }
     }
-
     lastFree = -1;
     for (int r = 0; r < n; r++) if (!fixedRow[r]) lastFree = r;
     if (lastFree < 0) {            // semua baris sudah terkunci
         res.emplace_back(cur, cur + n);
         return res;
     }
-
     if (pre.empty() && n >= 4) {   // P = 0: sama seperti Normal, pakai cermin
         static const int jumlah[13] = {0, 1, 0, 0, 2, 10, 4, 40, 92, 352, 724, 2680, 14200};
         if (n <= 12) res.reserve(jumlah[n]);
